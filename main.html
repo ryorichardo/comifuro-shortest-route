@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>⛩️ Comifuro Route Planner 🪭 コミフロ路線計画 🏮</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+  <h2>⛩️ Comifuro Route Planner 🪭 コミフロ路線計画 🏮</h2>
+  <div id="controls">
+    <input type="file" id="fileInput" accept=".csv" disabled>
+    <button id="refresh">↻ Refresh</button>
+    <input type="text" id="textInput" placeholder="Enter booth codes (A1,B2,C3)">
+    <button id="applyInput">Add From Text</button>
+    🔍 Zoom
+    <input type="range" min="50" max="300" value="100" class="slider" id="zoom">
+    <button id="computeRoute" disabled>Compute Route</button>
+    <button id="downloadMap">💾 Download Map</button>
+  </div>
+
+  <div id="mapWrapper">
+    <div id="map"></div>
+  </div>
+  <div id="routeList"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

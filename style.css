@@ -1,0 +1,93 @@
+body { 
+  font-family: sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 20px; 
+  background: #181A1B; 
+  color: #ccc;
+}
+
+h2 { 
+  margin-bottom: 10px; 
+}
+
+#controls { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 10px; 
+  align-items: center; 
+}
+
+#mapWrapper { 
+  overflow: auto; 
+  border: 1px solid #6b85e4; 
+  border-radius: 10px;
+  margin: 20px 20px 0 0;
+  display: inline-block;
+  max-height: 75vh;
+  max-width: 98vw;
+}
+
+#map { 
+  display: grid; 
+  background: #181A1B; 
+  transform-origin: top left; 
+}
+
+.cell { 
+  width: 50px; 
+  height: 50px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 16px; 
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.booth { 
+  background:	#6b85e4; 
+  border: solid #96acfc 2px;
+  border-radius: 5px;
+  color: white;
+}
+
+.empty { 
+  background: #181A1B; 
+  border: solid #181A1B 2px;
+}
+
+.selected { 
+  background: #ea4335 !important; 
+  border: solid #a13228 2px;
+  border-radius: 5px;
+}
+
+.path { 
+  background:	#34a853 !important; 
+  transition: background 0.2s; 
+  border: solid #34a853 2px;
+  border-radius: 0;
+}
+
+.entrance { 
+  background: #fbbc05 !important; 
+  color: white; 
+  font-weight: bold; 
+}
+
+#routeList { 
+  margin-top: 10px; 
+  padding: 10px; 
+  border-radius: 8px; 
+  width: fit-content; 
+}
+
+#textInput { 
+  padding: 5px; 
+  width: 220px; 
+}
+
+button, input[type="file"] { 
+  cursor: pointer; 
+}
