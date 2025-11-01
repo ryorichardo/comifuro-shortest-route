@@ -4,11 +4,12 @@ body {
   font-weight: bold;
   margin: 20px; 
   background: #181A1B; 
-  color: #ccc;
+  color: #f0f0f0;
 }
 
-h2 { 
+h1 { 
   margin-bottom: 10px; 
+  text-align: center;
 }
 
 #controls { 

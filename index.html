@@ -8,14 +8,14 @@
   <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
-  <h2>⛩️ Comifuro Route Planner 🪭 コミフロ路線計画 🏮</h2>
+  <h1>⛩️ Comifuro Route Planner 🪭 コミフロ路線計画 🏮</h2>
   <div id="controls">
-    <input type="file" id="fileInput" accept=".csv" disabled>
+    <input type="file" id="fileInput" accept=".csv" hidden>
     <button id="refresh">↻ Refresh</button>
     <input type="text" id="textInput" placeholder="Enter booth codes (A1,B2,C3)">
     <button id="applyInput">Add From Text</button>
     🔍 Zoom
-    <input type="range" min="50" max="300" value="100" class="slider" id="zoom">
+    <input type="range" min="20" max="300" value="100" class="slider" id="zoom">
     <button id="computeRoute" disabled>Compute Route</button>
     <button id="downloadMap">💾 Download Map</button>
   </div>

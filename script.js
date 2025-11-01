@@ -86,7 +86,7 @@ function toggleSelect(booth, cell) {
 
 // --- Refresh booths ---
 refreshBtn.addEventListener("click", () => {
-  const inputVal = textInput.value.trim();
+  textInput.value = "";
   selectedBooths = [];
   renderMap();
   routeListDiv.innerHTML = "";
@@ -97,16 +97,22 @@ applyInputBtn.addEventListener("click", () => {
   const inputVal = textInput.value.trim();
   if (!inputVal) return;
   const boothCodes = inputVal.split(",").map(b => b.trim()).filter(b => b);
+  const notFoundBooth = [];
   for (const booth of boothCodes) {
     if (boothPositions[booth] && !selectedBooths.includes(booth)) {
       selectedBooths.push(booth);
-      const cell = document.querySelector(`.cell.booth:not(.entrance):not(.selected)`);
+        const cell = document.querySelector(`.cell.booth:not(.entrance):not(.selected)`);
       const targetCell = Array.from(document.querySelectorAll(".cell.booth"))
         .find(c => c.textContent === booth);
       if (targetCell) targetCell.classList.add("selected");
     }
+    else if (!boothPositions[booth]) {
+      notFoundBooth.push(booth);
+    }
   }
-  textInput.value = "";
+  if (notFoundBooth.length > 0) {
+    alert("Booth " + notFoundBooth.map(e => e + ", ") + " not found")
+  }
 });
 
 // --- Compute route ---
