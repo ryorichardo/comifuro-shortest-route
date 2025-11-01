@@ -12,6 +12,15 @@ const fileInput = document.getElementById("fileInput");
 const textInput = document.getElementById("textInput");
 const applyInputBtn = document.getElementById("applyInput");
 const refreshBtn = document.getElementById("refresh");
+var slider = document.getElementById("zoom");
+
+// --- Default map zoom ---
+const windowWidth = window.innerWidth;
+if (windowWidth < 1000) { // small screens
+  slider.value = 200;
+} else { // desktop
+  slider.value = 100;
+}
 
 // --- Load local CSV map ---
 window.addEventListener("DOMContentLoaded", () => {
@@ -47,6 +56,7 @@ fileInput.addEventListener("change", (e) => {
 function renderMap() {
   mapDiv.innerHTML = "";
   mapDiv.style.gridTemplateColumns = `repeat(${width}, 54px)`;
+  mapDiv.style.transform = `scale(${slider.value/100})`;
   boothPositions = {};
   selectedBooths = [];
 
@@ -70,6 +80,7 @@ function renderMap() {
       mapDiv.appendChild(cell);
     }
   }
+  mapDiv.style.transform = `scale(${this.value/100})`;
 }
 
 // --- Click selection ---
@@ -94,8 +105,6 @@ refreshBtn.addEventListener("click", () => {
 
 // --- Add booths from text input ---
 applyInputBtn.addEventListener("click", () => {
-  selectedBooths = [];
-  renderMap();
   let inputVal = textInput.value.trim().split(",");
   if (inputVal.length < 2) {
     inputVal = inputVal[0].split("\n");
@@ -280,7 +289,6 @@ document.getElementById("downloadMap").onclick = async () => {
 };
 
 // Zoom slider
-var slider = document.getElementById("zoom");
 slider.oninput = function() {
   mapDiv.style.transform = `scale(${this.value/100})`;
 }

@@ -35,10 +35,10 @@ h1 {
   overflow: auto; 
   border: 1px solid var(--md-primary); 
   border-radius: 10px;
-  margin: 20px 20px 0 0;
+  margin: 20px 0 0 0;
   display: inline-block;
   max-height: 75vh;
-  max-width: 98vw;
+  max-width: 96vw;
 }
 
 #map { 
@@ -95,8 +95,14 @@ h1 {
 
 .entrance { 
   background: #fbbc05 !important; 
+  border: solid #a07800 2px;
   color: white; 
   font-weight: bold; 
+}
+
+.entrance:hover {
+    background-color: #ffcf3e !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 #routeList { 
@@ -184,40 +190,66 @@ button:focus-visible {
   accent-color: var(--md-primary-light);
 }
 
-@media screen and (max-width: 768px) {
-  body {
-    font-size: 32px;
-  }
-
-  h1 {
-    font-size: 1000px;
-  }
-  #zoom-btn {
-    bottom: 300px;
-    right: 25px;
-  }
-}
-
 ::placeholder {
   color: var(--md-text-on-primary);
   opacity: 1; /* Firefox */
 }
 
-  /* the actual large textarea */
-  .md-input {
-    min-height: 16px;
-    max-height: 50vh;
-    resize: vertical;
-    padding: calc(var(--padding) * 1.1) calc(var(--padding) * 0.9) calc(var(--padding) * 0.6);
-    box-sizing: border-box;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 16px;
-    color: var(--md-text-on-primary);
-    line-height: 1.5;
-    caret-color: var(--md-primary);
-    background-color: #f0f0f075;
-    border-radius: 5px;
-    border: #36363675 solid 1px;
+/* the actual large textarea */
+.md-input {
+  min-height: 16px;
+  max-height: 50vh;
+  resize: vertical;
+  padding: calc(var(--padding) * 1.1) calc(var(--padding) * 0.9) calc(var(--padding) * 0.6);
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: var(--md-text-on-primary);
+  line-height: 1.5;
+  caret-color: var(--md-primary);
+  background-color: #f0f0f075;
+  border-radius: 5px;
+  border: #36363675 solid 1px;
+}
+
+#routeList{
+  background-color: var(--md-secondary-dark);
+}
+
+@media (min-width: 768px) {
+  button {
+    font-size: 20px;
   }
+
+  input {
+    font-size: 20px;
+  }
+
+  h1 {
+    font-size: 72px;
+  }
+  #zoom-btn {
+    bottom: 75px;
+    right: 25px;
+  }
+}
+
+@media (min-width: 1024px) {
+    button {
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  h1 {
+    font-size: 36px;
+  }
+  #zoom-btn {
+    bottom: 100px;
+    right: 50px;
+  }
+}
