@@ -1,10 +1,22 @@
+:root {
+  --md-primary: #6b85e4;     /* main color */
+  --md-primary-dark: #5368b3; /* on click */
+  --md-primary-light: #96acfc; /* hover */
+  --md-text-on-primary: #f0f0f0;
+
+  --md-secondary: #f0f0f0;     /* main color */
+  --md-secondary-dark: #464646; /* on click */
+  --md-secondary-light: #b3b3b3; /* hover */
+  --md-text-on-secondary: #5368b3;
+}
+
 body { 
   font-family: sans-serif;
   font-size: 16px;
   font-weight: bold;
   margin: 20px; 
   background: #181A1B; 
-  color: #f0f0f0;
+  color: var(--md-text-on-primary);
 }
 
 h1 { 
@@ -21,7 +33,7 @@ h1 {
 
 #mapWrapper { 
   overflow: auto; 
-  border: 1px solid #6b85e4; 
+  border: 1px solid var(--md-primary); 
   border-radius: 10px;
   margin: 20px 20px 0 0;
   display: inline-block;
@@ -47,10 +59,15 @@ h1 {
 }
 
 .booth { 
-  background:	#6b85e4; 
+  background:	var(--md-primary); 
   border: solid #96acfc 2px;
   border-radius: 5px;
   color: white;
+}
+
+.booth:hover {
+  background-color: var(--md-primary-light);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .empty { 
@@ -62,6 +79,11 @@ h1 {
   background: #ea4335 !important; 
   border: solid #a13228 2px;
   border-radius: 5px;
+}
+
+.selected:hover {
+  background-color: #ff7164 !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .path { 
@@ -89,6 +111,113 @@ h1 {
   width: 220px; 
 }
 
+button {
+  background-color: var(--md-primary);
+  border: 0;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  color: var(--md-text-on-primary);
+  margin-top: auto;
+}
+
 button, input[type="file"] { 
   cursor: pointer; 
 }
+
+/* hover state */
+button:hover {
+  background-color: var(--md-primary-light);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* click (active) state */
+button:active {
+  background-color: var(--md-primary-dark);
+  transform: scale(0.97);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+
+/* keyboard focus */
+button.secondary:focus-visible {
+  outline: 2px solid var(--md-secondary-light);
+  outline-offset: 2px;
+}
+
+/* hover state */
+button.secondary:hover {
+  background-color: var(--md-secondary-light);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* click (active) state */
+button.secondary:active {
+  background-color: var(--md-secondary-dark);
+  transform: scale(0.97);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+
+/* keyboard focus */
+button:focus-visible {
+  outline: 2px solid var(--md-primary-light);
+  outline-offset: 2px;
+}
+
+.input-btn {
+  width: 48.5%;
+}
+
+.secondary {
+  background-color: #f0f0f0;
+  /* border: var(--md-primary) 1px solid; */
+  color: var(--md-text-on-secondary);
+}
+
+#zoom-btn {
+  position: absolute;
+  bottom: 100px;
+  right: 50px;
+  background-color: #f0f0f075;
+  border: #36363675 solid 1px;
+  border-radius: 5px;
+  padding: 5px 15px;
+  accent-color: var(--md-primary-light);
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 32px;
+  }
+
+  h1 {
+    font-size: 1000px;
+  }
+  #zoom-btn {
+    bottom: 300px;
+    right: 25px;
+  }
+}
+
+::placeholder {
+  color: var(--md-text-on-primary);
+  opacity: 1; /* Firefox */
+}
+
+  /* the actual large textarea */
+  .md-input {
+    min-height: 16px;
+    max-height: 50vh;
+    resize: vertical;
+    padding: calc(var(--padding) * 1.1) calc(var(--padding) * 0.9) calc(var(--padding) * 0.6);
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    color: var(--md-text-on-primary);
+    line-height: 1.5;
+    caret-color: var(--md-primary);
+    background-color: #f0f0f075;
+    border-radius: 5px;
+    border: #36363675 solid 1px;
+  }

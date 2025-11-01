@@ -94,9 +94,14 @@ refreshBtn.addEventListener("click", () => {
 
 // --- Add booths from text input ---
 applyInputBtn.addEventListener("click", () => {
-  const inputVal = textInput.value.trim();
+  selectedBooths = [];
+  renderMap();
+  let inputVal = textInput.value.trim().split(",");
+  if (inputVal.length < 2) {
+    inputVal = inputVal[0].split("\n");
+  }
   if (!inputVal) return;
-  const boothCodes = inputVal.split(",").map(b => b.trim()).filter(b => b);
+  const boothCodes = inputVal.map(b => b.trim()).filter(b => b);
   const notFoundBooth = [];
   for (const booth of boothCodes) {
     if (boothPositions[booth] && !selectedBooths.includes(booth)) {
@@ -106,7 +111,7 @@ applyInputBtn.addEventListener("click", () => {
         .find(c => c.textContent === booth);
       if (targetCell) targetCell.classList.add("selected");
     }
-    else if (!boothPositions[booth]) {
+      else if (!boothPositions[booth]) {
       notFoundBooth.push(booth);
     }
   }
