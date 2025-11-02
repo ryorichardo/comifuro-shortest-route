@@ -248,9 +248,6 @@ document.getElementById("downloadMap").onclick = async () => {
   const mapDiv = document.getElementById("map");
   const wrapper = document.getElementById("mapWrapper");
 
-  mapDiv.scrollIntoView();
-  await new Promise(r => setTimeout(r, 200)); // ensure rendering complete
-
   // Save current transform and scroll (so we can restore later)
   const prevTransform = mapDiv.style.transform;
   const prevTransformOrigin = mapDiv.style.transformOrigin;
