@@ -248,6 +248,9 @@ document.getElementById("downloadMap").onclick = async () => {
   const mapDiv = document.getElementById("map");
   const wrapper = document.getElementById("mapWrapper");
 
+  mapDiv.scrollIntoView();
+  await new Promise(r => setTimeout(r, 200)); // ensure rendering complete
+
   // Save current transform and scroll (so we can restore later)
   const prevTransform = mapDiv.style.transform;
   const prevTransformOrigin = mapDiv.style.transformOrigin;
@@ -291,4 +294,9 @@ document.getElementById("downloadMap").onclick = async () => {
 // Zoom slider
 slider.oninput = function() {
   mapDiv.style.transform = `scale(${this.value/100})`;
+}
+
+// Add all files to cache
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js");
 }
