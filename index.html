@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>⛩️ Comifuro Route Planner 🪭 コミフロ路線計画 🏮</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="./libs/papaparse.js"></script>
+  <script src="./libs/html2canvas.js"></script>
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
@@ -30,15 +30,13 @@
           maxlength="1000"
         ></textarea>
       </div>
-      <div>
-        <button class="input-btn secondary" id="refresh">Clear</button>
-        <button class="input-btn" id="applyInput">Add</button>
-        <!-- <button class="input-btn" id="computeRoute" disabled>Compute Route</button>
-        <button class="input-btn" id="downloadMap">💾 Download Map</button> -->
+      <div class="input-area">
+        <button class="input-btn secondary" id="refresh">⭮ Clear</button>
+        <button class="input-btn" id="applyInput">✚ Add</button>
       </div>
     </div>
-    <button id="computeRoute">Compute Route</button>
-    <button id="downloadMap"> Download Map</button>
+    <button id="computeRoute">🔍︎ Find Route</button>
+    <button id="downloadMap">🡻 Download Map</button>
   </div>
 
   <div id="mapWrapper">

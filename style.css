@@ -101,7 +101,7 @@ h1 {
 }
 
 .entrance:hover {
-    background-color: #ffcf3e !important;
+  background-color: #ffcf3e !important;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
@@ -129,6 +129,12 @@ button {
 
 button, input[type="file"] { 
   cursor: pointer; 
+}
+
+/* keyboard focus */
+button:focus-visible {
+  outline: 2px solid var(--md-primary-light);
+  outline-offset: 2px;
 }
 
 /* hover state */
@@ -163,14 +169,14 @@ button.secondary:active {
   box-shadow: 0 1px 4px rgba(0,0,0,0.25);
 }
 
-/* keyboard focus */
-button:focus-visible {
-  outline: 2px solid var(--md-primary-light);
-  outline-offset: 2px;
+.input-btn {
+  width: 48%;
 }
 
-.input-btn {
-  width: 48.5%;
+.input-area {
+  display: flex;
+  align-items: center; 
+  justify-content: space-between;
 }
 
 .secondary {
@@ -180,14 +186,31 @@ button:focus-visible {
 }
 
 #zoom-btn {
-  position: absolute;
-  bottom: 100px;
-  right: 50px;
+  position: fixed;
+  bottom: 75px;
+  right: 75px;
   background-color: #f0f0f075;
   border: #36363675 solid 1px;
   border-radius: 5px;
   padding: 5px 15px;
   accent-color: var(--md-primary-light);
+}
+
+#computeRoute {
+  background-color: #34a853;
+}
+
+/* hover state */
+#computeRoute:hover {
+  background-color: #28c552;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* click (active) state */
+#computeRoute:active {
+  background-color: #2a8a44;
+  transform: scale(0.97);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
 }
 
 ::placeholder {
@@ -197,7 +220,7 @@ button:focus-visible {
 
 /* the actual large textarea */
 .md-input {
-  min-height: 16px;
+  min-height: 36px;
   max-height: 50vh;
   resize: vertical;
   padding: calc(var(--padding) * 1.1) calc(var(--padding) * 0.9) calc(var(--padding) * 0.6);
@@ -207,6 +230,7 @@ button:focus-visible {
   background: transparent;
   font-size: 16px;
   color: var(--md-text-on-primary);
+  caret-color: #f0f0f0 !important;
   line-height: 1.5;
   caret-color: var(--md-primary);
   background-color: #f0f0f075;
@@ -259,7 +283,7 @@ button:focus-visible {
   }
 
   #zoom-btn {
-    bottom: 100px;
-    right: 50px;
+    bottom: 75px;
+    right: 75px;
   }
 }
