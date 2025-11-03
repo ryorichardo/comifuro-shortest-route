@@ -246,6 +246,7 @@ function findShortestRoute(booths) {
 // --- Download map ---
 document.getElementById("downloadMap").onclick = async () => {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  routeListDiv.innerHTML = navigator.userAgent + "AAAAA" + isIOS;
 
   // ✅ Pre-open the window first so Safari doesn't block it
   let newWindow = null;
