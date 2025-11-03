@@ -245,6 +245,24 @@ function findShortestRoute(booths) {
 
 // --- Download map ---
 document.getElementById("downloadMap").onclick = async () => {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+  // ✅ Pre-open the window first so Safari doesn't block it
+  let newWindow = null;
+  if (isIOS) {
+    newWindow = window.open("", "_blank");
+    if (newWindow) {
+      newWindow.document.title = "Generated Map";
+      newWindow.document.body.style.backgroundColor = "#181A1B";
+      newWindow.document.body.style.display = "flex";
+      newWindow.document.body.style.justifyContent = "center";
+      newWindow.document.body.style.alignItems = "center";
+      newWindow.document.body.style.height = "100vh";
+      newWindow.document.body.style.margin = "0";
+      newWindow.document.body.innerHTML = "<p style='color:white;font-family:sans-serif;'>Generating image...</p>";
+    }
+  }
+
   const mapDiv = document.getElementById("map");
   const wrapper = document.getElementById("mapWrapper");
 
@@ -274,10 +292,6 @@ document.getElementById("downloadMap").onclick = async () => {
     backgroundColor: "#181A1B"
   }).then(canvas => {
     const image = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-
-    // Detect iOS Safari
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     if (isIOS) {
       // Create a new window and append image using DOM APIs
@@ -304,6 +318,7 @@ document.getElementById("downloadMap").onclick = async () => {
       } 
     } else {
       // Works normally elsewhere
+      const link = document.createElement("a");
       link.href = image;
       link.download = "routed_map_full.png";
       link.click();
