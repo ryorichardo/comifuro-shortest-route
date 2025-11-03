@@ -273,10 +273,22 @@ document.getElementById("downloadMap").onclick = async () => {
     height: mapDiv.scrollHeight,
     backgroundColor: "#181A1B"
   }).then(canvas => {
+    const image = canvas.toDataURL("image/png");
     const link = document.createElement("a");
-    link.download = "routed_map_full.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+
+    // Detect iOS Safari
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    if (isIOS) {
+      // Open image in new tab (Safari doesn’t support download)
+      const newWindow = window.open();
+      newWindow.document.write(`<img src="${image}" style="width:100%">`);
+    } else {
+      // Works normally elsewhere
+      link.href = image;
+      link.download = "routed_map_full.png";
+      link.click();
+    }
   });
 
   // Restore original state
