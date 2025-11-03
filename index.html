@@ -2,57 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>⛩️ Comifuro Route Planner 🪭 コミフロ路線計画 🏮</title>
-  <script src="./libs/papaparse.js"></script>
-  <script src="./libs/html2canvas.js"></script>
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script>
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
-  <link rel="stylesheet" href="style.css"> 
-  <link rel="icon" href="assets\favicon-16x16.png" sizes="16x16" type="image/png">
-  <link rel="icon" href="assets\favicon-32x32.png" sizes="32x32" type="image/png">
-  <link rel="apple-touch-icon" href="assets\favicon-180x180.png" sizes="180x180">
-  <link rel="icon" href="assets\favicon-192x192.png" sizes="192x192" type="image/png">
+  <title>Booth Route Optimizer (Lite)</title>
+  <link rel="stylesheet" href="style.css">
+   <script src="./libs/html2canvas.js"></script>
 </head>
 <body>
-  <h1>⛩️ Comifuro Route Planner 🪭 コミフロ路線計画 🏮</h2>
   <div id="controls">
-    <input type="file" id="fileInput" accept=".csv" hidden>
-    <div>
-      <div>
-        <textarea
-          class="md-input"
-          id="textInput"
-          name="message"
-          rows="1"
-          placeholder="Enter booth codes"
-          maxlength="1000"
-        ></textarea>
-      </div>
-      <div class="input-area">
-        <button class="input-btn secondary" id="refresh">⭮ Clear</button>
-        <button class="input-btn" id="applyInput">✚ Add</button>
-      </div>
-    </div>
-    <button id="computeRoute">🔍︎ Find Route</button>
-    <button id="downloadMap">🡻 Download Map</button>
+    <input type="file" id="fileInput" accept=".csv">
+    <textarea id="textInput" placeholder="Enter booth codes (comma or newline separated)"></textarea>
+    <button id="applyInput">Apply Input</button>
+    <button id="computeRoute">Compute Route</button>
+    <button id="refresh">Refresh</button>
+    <button id="downloadMap">Download Map</button>
+    <input type="range" id="zoom" min="50" max="300" value="100">
   </div>
 
   <div id="mapWrapper">
-    <div id="map"></div>
+    <canvas id="mapCanvas"></canvas>
   </div>
+
   <div id="routeList"></div>
 
-  <div id="zoom-btn">
-    🔍
-    <input type="range" min="20" max="300" class="slider" id="zoom">
-  </div>
-
-  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
