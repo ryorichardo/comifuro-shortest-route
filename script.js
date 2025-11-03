@@ -280,9 +280,28 @@ document.getElementById("downloadMap").onclick = async () => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     if (isIOS) {
-      // Open image in new tab (Safari doesn’t support download)
-      const newWindow = window.open();
-      newWindow.document.write(`<img src="${image}" style="width:100%">`);
+      // Create a new window and append image using DOM APIs
+      const newWindow = window.open("", "_blank");
+      if (newWindow) {
+        const img = newWindow.document.createElement("img");
+        img.src = imageData;
+        img.style.width = "100%";
+        img.style.display = "block";
+        img.style.backgroundColor = "#181A1B";
+        newWindow.document.body.style.margin = "0";
+        newWindow.document.body.appendChild(img);
+
+        // Optional: Add instruction text
+        const info = newWindow.document.createElement("p");
+        info.textContent = "Tap and hold the image to save it.";
+        info.style.textAlign = "center";
+        info.style.color = "#fff";
+        info.style.fontFamily = "sans-serif";
+        info.style.marginTop = "1em";
+        newWindow.document.body.appendChild(info);
+      } else {
+        alert("Please allow pop-ups to preview the image.");
+      } 
     } else {
       // Works normally elsewhere
       link.href = image;
