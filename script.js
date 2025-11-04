@@ -328,7 +328,7 @@ slider.oninput = function() {
   mapDiv.style.transform = `scale(${this.value/100})`;
 }
 
-// Add all files to cache
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/service-worker.js");
-}
+// // Add all files to cache
+// if ("serviceWorker" in navigator) {
+//   navigator.serviceWorker.register("/service-worker.js");
+// }
