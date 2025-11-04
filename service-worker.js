@@ -5,7 +5,7 @@ const ASSETS = [
   "/index.html",
   "/libs/html2canvas.js",
   "/libs/papaparse.js",
-  "/map.csv",
+  "/map_weighted.csv",
   "/style.css",
   "/script.js",
   "/assets/favicon-16x16.png",

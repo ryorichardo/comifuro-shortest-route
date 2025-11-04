@@ -4,6 +4,7 @@ let selectedBooths = [];
 let boothPositions = {};
 let zoomLevel = 1;
 const ENTRANCE_CODE = "ENTRANCE"; // 🏁 Fixed starting point
+const WEIGHT_CODE = "#"
 
 const mapDiv = document.getElementById("map");
 const computeBtn = document.getElementById("computeRoute");
@@ -24,7 +25,7 @@ if (windowWidth < 1000) { // small screens
 
 // --- Load local CSV map ---
 window.addEventListener("DOMContentLoaded", () => {
-  fetch("map.csv")
+  fetch("map_weighted.csv")
     .then(res => res.text())
     .then(text => {
       const results = Papa.parse(text);
@@ -68,7 +69,7 @@ function renderMap() {
       cell.dataset.x = x;
       cell.dataset.y = y;
 
-      if (booth) {
+      if (booth && !booth.startsWith(WEIGHT_CODE)) {
         cell.classList.add("booth");
         if (booth.toUpperCase() === ENTRANCE_CODE) cell.classList.add("entrance");
         cell.textContent = booth;
@@ -153,7 +154,8 @@ async function animateRoute(route) {
     const start = nearestAisleCell(startBooth);
     const goal = nearestAisleCell(goalBooth);
     if (!start || !goal) continue;
-    const path = bfs(start, goal);
+    // const path = bfs(start, goal);
+    const path = dijkstra(start, goal);
     if (!path) continue;
     for (const p of path) {
       const cell = document.querySelector(`[data-x="${p.x}"][data-y="${p.y}"]`);
@@ -176,46 +178,115 @@ function nearestAisleCell(booth) {
   const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
   for (const [dx, dy] of dirs) {
     const nx = pos.x + dx, ny = pos.y + dy;
-    if (nx >= 0 && ny >= 0 && nx < width && ny < height && !grid[ny][nx]) {
+    if (nx >= 0 && ny >= 0 && nx < width && ny < height && (!grid[ny][nx] || grid[ny][nx].startsWith(WEIGHT_CODE))) {
       return { x: nx, y: ny };
     }
   }
   return null;
 }
 
-// --- BFS pathfinding ---
-function bfs(start, goal) {
-  const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
-  const queue = [start];
-  const visited = new Set([`${start.x},${start.y}`]);
-  const parent = {};
+// // --- BFS pathfinding ---
+// function bfs(start, goal) {
+//   const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+//   const queue = [start];
+//   const visited = new Set([`${start.x},${start.y}`]);
+//   const parent = {};
 
-  while (queue.length) {
-    const cur = queue.shift();
+//   while (queue.length) {
+//     const cur = queue.shift();
+//     if (cur.x === goal.x && cur.y === goal.y) {
+//       const path = [];
+//       let k = `${goal.x},${goal.y}`;
+//       while (k) {
+//         const [x, y] = k.split(',').map(Number);
+//         path.push({x, y});
+//         k = parent[k];
+//       }
+//       return path.reverse();
+//     }
+
+//     for (const [dx, dy] of dirs) {
+//       const nx = cur.x + dx, ny = cur.y + dy;
+//       if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+//       if (grid[ny][nx]) continue;
+//       const key = `${nx},${ny}`;
+//       if (!visited.has(key)) {
+//         visited.add(key);
+//         parent[key] = `${cur.x},${cur.y}`;
+//         queue.push({x: nx, y: ny});
+//       }
+//     }
+//   }
+//   return null;
+// }
+
+// --- Weighted Dijkstra Pathfinding ---
+function dijkstra(start, goal) {
+  const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+  const dist = {};
+  const prev = {};
+  const pq = new MinHeap();
+
+  function key(x, y) { return `${x},${y}`; }
+
+  // Initialize
+  dist[key(start.x, start.y)] = 0;
+  pq.push({ x: start.x, y: start.y, cost: 0 });
+
+  while (!pq.isEmpty()) {
+    const cur = pq.pop();
+    const curKey = key(cur.x, cur.y);
+
     if (cur.x === goal.x && cur.y === goal.y) {
+      // reconstruct path
       const path = [];
-      let k = `${goal.x},${goal.y}`;
+      let k = curKey;
       while (k) {
         const [x, y] = k.split(',').map(Number);
-        path.push({x, y});
-        k = parent[k];
+        path.push({ x, y });
+        k = prev[k];
       }
       return path.reverse();
     }
 
     for (const [dx, dy] of dirs) {
       const nx = cur.x + dx, ny = cur.y + dy;
-      if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
-      if (grid[ny][nx]) continue;
-      const key = `${nx},${ny}`;
-      if (!visited.has(key)) {
-        visited.add(key);
-        parent[key] = `${cur.x},${cur.y}`;
-        queue.push({x: nx, y: ny});
+      if (nx < 0 || ny < 0 || ny >= grid.length || nx >= grid[0].length) continue;
+
+      const cell = grid[ny][nx];
+      if (cell && !cell.startsWith(WEIGHT_CODE)) continue; // not an aisle cell
+
+      // Determine weight (default = 1 if not specified)
+      let weight = 1;
+      if (cell && /^#\d+/.test(cell)) weight = parseFloat(cell.substring(1));
+
+      const newCost = dist[curKey] + weight;
+      const nextKey = key(nx, ny);
+
+      if (!(nextKey in dist) || newCost < dist[nextKey]) {
+        dist[nextKey] = newCost;
+        prev[nextKey] = curKey;
+        pq.push({ x: nx, y: ny, cost: newCost });
       }
     }
   }
-  return null;
+
+  return null; // no path found
+}
+
+// --- Simple MinHeap for Dijkstra ---
+class MinHeap {
+  constructor() { this.data = []; }
+  push(node) {
+    this.data.push(node);
+    this.data.sort((a, b) => a.cost - b.cost);
+  }
+  pop() { return this.data.shift(); }
+  isEmpty() { return this.data.length === 0; }
+}
+
+function manhattan(a, b) {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
 
 // --- Nearest neighbor heuristic ---
@@ -239,6 +310,22 @@ function findShortestRoute(booths) {
     }
     route.push(best);
     remaining.splice(remaining.indexOf(best), 1);
+  }
+
+   // 2-opt improvement
+  let improved = true;
+  while (improved) {
+    improved = false;
+    for (let i = 1; i < route.length - 2; i++) {
+      for (let j = i + 1; j < route.length - 1; j++) {
+        const d1 = manhattan(route[i-1], route[i]) + manhattan(route[j], route[j+1]);
+        const d2 = manhattan(route[i-1], route[j]) + manhattan(route[i], route[j+1]);
+        if (d2 < d1) {
+          route.splice(i, j - i + 1, ...route.slice(i, j + 1).reverse());
+          improved = true;
+        }
+      }
+    }
   }
   return route;
 }
