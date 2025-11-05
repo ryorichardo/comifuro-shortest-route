@@ -371,8 +371,9 @@ document.getElementById("downloadMap").onclick = async () => {
     logging: true
   }).then(canvas => {
     // const image = canvas.toDataURL("image/png");
+    const image = canvas.toDataURL("image/png");
 
-    if (true) {
+    if (false) {
       const overlay = document.createElement("div");
       overlay.id = "map-overlay";
       Object.assign(overlay.style, {
@@ -413,24 +414,8 @@ document.getElementById("downloadMap").onclick = async () => {
         if (!blob) return alert("Failed to generate image.");
 
         const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "routed_map_full.png";
-
-        // Try triggering download
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
-        if (isSafari) {
-          // Safari/iPad fallback — open in new tab instead
-          window.open(url, "_blank");
-        } else {
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-
-        // Clean up
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showOverlay(url); // 👈 open overlay view
+        setTimeout(() => URL.revokeObjectURL(url), 36000000);
       }, "image/png");
       }
   });
@@ -447,6 +432,76 @@ document.getElementById("downloadMap").onclick = async () => {
 // Zoom slider
 slider.oninput = function() {
   mapDiv.style.transform = `scale(${this.value/100})`;
+}
+
+// === Overlay viewer ===
+function showOverlay(imageUrl) {
+  // remove existing overlay if open
+  const old = document.getElementById("overlayPreview");
+  if (old) old.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "overlayPreview";
+  Object.assign(overlay.style, {
+    position: "fixed",
+    top: 0, left: 0, right: 0, bottom: 0,
+    background: "rgba(0,0,0,0.85)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+  });
+
+  const img = document.createElement("img");
+  img.src = imageUrl;
+  Object.assign(img.style, {
+    maxWidth: "90%",
+    maxHeight: "90%",
+    borderRadius: "12px",
+    boxShadow: "0 0 20px rgba(255,255,255,0.2)",
+  });
+
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "×";
+  Object.assign(closeBtn.style, {
+    position: "absolute",
+    top: "16px",
+    right: "24px",
+    fontSize: "36px",
+    color: "#fff",
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+  });
+  closeBtn.onclick = () => overlay.remove();
+
+  const downloadBtn = document.createElement("button");
+  downloadBtn.textContent = "⬇️ Save";
+  Object.assign(downloadBtn.style, {
+    position: "absolute",
+    bottom: "24px",
+    right: "24px",
+    padding: "10px 16px",
+    fontSize: "16px",
+    background: "#007bff",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+  });
+  downloadBtn.onclick = () => {
+    const link = document.createElement("a");
+    link.href = imageUrl;
+    link.download = "routed_map_full.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  overlay.appendChild(img);
+  overlay.appendChild(closeBtn);
+  overlay.appendChild(downloadBtn);
+  document.body.appendChild(overlay);
 }
 
 // // Add all files to cache
