@@ -365,7 +365,7 @@ document.getElementById("downloadMap").onclick = async () => {
   }).then(canvas => {
     const image = canvas.toDataURL("image/jpg");
 
-    if (isIOS) {
+    if (false) {
       const overlay = document.createElement("div");
       overlay.id = "map-overlay";
       Object.assign(overlay.style, {
@@ -398,7 +398,9 @@ document.getElementById("downloadMap").onclick = async () => {
       const link = document.createElement("a");
       link.href = image;
       link.download = "routed_map_full.jpg";
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     }
   });
 
