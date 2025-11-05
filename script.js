@@ -356,8 +356,10 @@ document.getElementById("downloadMap").onclick = async () => {
   wrapper.style.width = `${mapDiv.scrollWidth}px`;
   wrapper.style.height = `${mapDiv.scrollHeight}px`;
 
+  await new Promise(r => requestAnimationFrame(r));
+
   // Use device pixel ratio for crisp Retina capture
-  const pixelRatio = Math.min(window.devicePixelRatio || 2, 2);
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
 
   await html2canvas(mapDiv, {
     scale: pixelRatio,
@@ -411,39 +413,94 @@ document.getElementById("downloadMap").onclick = async () => {
       // document.body.removeChild(link);
 
         canvas.toBlob(blob => {
+      //   if (!blob) return alert("Failed to generate image.");
+
+      //   const url = URL.createObjectURL(blob);
+      //   const overlay = document.createElement("div");
+      //   overlay.id = "map-overlay";
+      //   Object.assign(overlay.style, {
+      //     position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)",
+      //     display: "flex", justifyContent: "center", alignItems: "center",
+      //     zIndex: 99999, padding: "1rem"
+      //   });
+      //   const img = document.createElement("img");
+      //   img.src = url;
+      //   img.style.maxWidth = "100%";
+      //   img.style.maxHeight = "100%";
+      //   img.style.display = "block";
+      //   img.style.objectFit = "contain";
+      //   overlay.appendChild(img);
+
+      //   const tip = document.createElement("div");
+      //   tip.textContent = "Tap and hold the image → Save Image";
+      //   Object.assign(tip.style, { color: "#eee", fontFamily: "sans-serif", marginTop: "1rem", textAlign: "center" });
+      //   overlay.appendChild(tip);
+
+      //   // close on background tap
+      //   overlay.addEventListener("click", (e) => {
+      //     if (e.target === overlay) overlay.remove();
+      //   }, { once: true });
+
+      //   document.body.appendChild(overlay);
+      //   setTimeout(() => URL.revokeObjectURL(url), 36000000);
+      // }, "image/png");
+      // }
         if (!blob) return alert("Failed to generate image.");
+  const url = URL.createObjectURL(blob);
 
-        const url = URL.createObjectURL(blob);
-        const overlay = document.createElement("div");
-        overlay.id = "map-overlay";
-        Object.assign(overlay.style, {
-          position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)",
-          display: "flex", justifyContent: "center", alignItems: "center",
-          zIndex: 99999, padding: "1rem"
-        });
-        document.body.appendChild(overlay);
-        const img = document.createElement("img");
-        img.src = url;
-        img.style.maxWidth = "100%";
-        img.style.maxHeight = "100%";
-        img.style.display = "block";
-        img.style.objectFit = "contain";
-        overlay.appendChild(img);
+  requestAnimationFrame(() => {
+    const overlay = document.createElement("div");
+    overlay.id = "map-overlay";
+    Object.assign(overlay.style, {
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.9)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 99999,
+      padding: "1rem",
+      transition: "opacity 0.2s ease",
+      opacity: "0"
+    });
 
-        const tip = document.createElement("div");
-        tip.textContent = "Tap and hold the image → Save Image";
-        Object.assign(tip.style, { color: "#eee", fontFamily: "sans-serif", marginTop: "1rem", textAlign: "center" });
-        overlay.appendChild(tip);
+    const img = document.createElement("img");
+    img.src = url;
+    Object.assign(img.style, {
+      maxWidth: "100%",
+      maxHeight: "100%",
+      display: "block",
+      objectFit: "contain",
+      borderRadius: "8px"
+    });
+    overlay.appendChild(img);
 
-        // close on background tap
-        overlay.addEventListener("click", (e) => {
-          if (e.target === overlay) overlay.remove();
-        }, { once: true });
+    const tip = document.createElement("div");
+    tip.textContent = "Tap and hold the image → Save Image";
+    Object.assign(tip.style, {
+      color: "#eee",
+      fontFamily: "sans-serif",
+      marginTop: "1rem",
+      textAlign: "center",
+      fontSize: "14px"
+    });
+    overlay.appendChild(tip);
 
-        document.body.appendChild(overlay);
-        setTimeout(() => URL.revokeObjectURL(url), 36000000);
-      }, "image/png");
+    overlay.addEventListener("click", e => {
+      if (e.target === overlay) {
+        overlay.style.opacity = "0";
+        setTimeout(() => overlay.remove(), 200);
       }
+    });
+
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => (overlay.style.opacity = "1"));
+
+    // Clean up blob URL after some time
+    setTimeout(() => URL.revokeObjectURL(url), 3600000);
+      });
+    }, "image/png");
+  }
   });
 
   // Restore original state
