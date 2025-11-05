@@ -372,10 +372,9 @@ document.getElementById("downloadMap").onclick = async () => {
     removeContainer: true,
     logging: true
   }).then(canvas => {
-    // const image = canvas.toDataURL("image/png");
     const image = canvas.toDataURL("image/png");
 
-    if (false) {
+    if (true) {
       const overlay = document.createElement("div");
       overlay.id = "map-overlay";
       Object.assign(overlay.style, {
@@ -383,7 +382,6 @@ document.getElementById("downloadMap").onclick = async () => {
         display: "flex", justifyContent: "center", alignItems: "center",
         zIndex: 99999, padding: "1rem"
       });
-      document.body.appendChild(overlay);
       const img = document.createElement("img");
       img.src = image;
       img.style.maxWidth = "100%";
