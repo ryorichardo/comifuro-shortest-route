@@ -357,13 +357,13 @@ document.getElementById("downloadMap").onclick = async () => {
   wrapper.style.height = `${mapDiv.scrollHeight}px`;
 
   await html2canvas(mapDiv, {
-    scale: 1,
+    scale: isIOS ? 1 : 1.5,
     useCORS: true,
     width: mapDiv.scrollWidth,
     height: mapDiv.scrollHeight,
     backgroundColor: "#181A1B"
   }).then(canvas => {
-    const image = canvas.toDataURL("image/png");
+    const image = canvas.toDataURL("image/jpg");
 
     if (isIOS) {
       const overlay = document.createElement("div");
@@ -397,7 +397,7 @@ document.getElementById("downloadMap").onclick = async () => {
       // Works normally elsewhere
       const link = document.createElement("a");
       link.href = image;
-      link.download = "routed_map_full.png";
+      link.download = "routed_map_full.jpg";
       link.click();
     }
   });
