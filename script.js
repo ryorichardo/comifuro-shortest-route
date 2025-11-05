@@ -445,8 +445,16 @@ document.getElementById("downloadMap").onclick = async () => {
       //   setTimeout(() => URL.revokeObjectURL(url), 36000000);
       // }, "image/png");
       // }
+      alert("canvas.toBlob called");
         if (!blob) return alert("Failed to generate image.");
-  const url = URL.createObjectURL(blob);
+  let url = null;
+    if (blob) {
+    url = URL.createObjectURL(blob);
+  } else {
+    // iOS Safari often fails here
+    alert("Blob creation failed, using base64 fallback.");
+    url = canvas.toDataURL("image/png");
+  }
 
   requestAnimationFrame(() => {
     const overlay = document.createElement("div");
