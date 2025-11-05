@@ -356,8 +356,11 @@ document.getElementById("downloadMap").onclick = async () => {
   wrapper.style.width = `${mapDiv.scrollWidth}px`;
   wrapper.style.height = `${mapDiv.scrollHeight}px`;
 
+  // Use device pixel ratio for crisp Retina capture
+  const pixelRatio = window.devicePixelRatio || 1;
+
   await html2canvas(mapDiv, {
-    scale: 1,
+    scale: pixelRatio,
     useCORS: true,
     allowTaint: true,
     width: mapDiv.scrollWidth,
