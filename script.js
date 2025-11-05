@@ -346,6 +346,7 @@ document.getElementById("downloadMap").onclick = async () => {
   mapDiv.style.transformOrigin = "top left";
   wrapper.scrollTop = 0;
   wrapper.scrollLeft = 0;
+  void mapDiv.offsetHeight; // <— force reflow
 
   // Temporarily make the wrapper large enough to show the full map
   const prevWidth = wrapper.style.width;
@@ -354,7 +355,7 @@ document.getElementById("downloadMap").onclick = async () => {
   wrapper.style.height = `${mapDiv.scrollHeight}px`;
 
   await html2canvas(mapDiv, {
-    scale: 2,
+    scale: 1,
     useCORS: true,
     width: mapDiv.scrollWidth,
     height: mapDiv.scrollHeight,
@@ -363,7 +364,10 @@ document.getElementById("downloadMap").onclick = async () => {
     const link = document.createElement("a");
     link.download = "routed_map_full.png";
     link.href = canvas.toDataURL("image/png");
+
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   });
 
   // Restore original state
