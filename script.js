@@ -357,7 +357,7 @@ document.getElementById("downloadMap").onclick = async () => {
   wrapper.style.height = `${mapDiv.scrollHeight}px`;
 
   await html2canvas(mapDiv, {
-    scale: isIOS ? 1 : 1.5,
+    scale: 2,
     useCORS: true,
     width: mapDiv.scrollWidth,
     height: mapDiv.scrollHeight,
