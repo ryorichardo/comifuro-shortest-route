@@ -357,7 +357,7 @@ document.getElementById("downloadMap").onclick = async () => {
   wrapper.style.height = `${mapDiv.scrollHeight}px`;
 
   // Use device pixel ratio for crisp Retina capture
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+  const pixelRatio = Math.min(window.devicePixelRatio || 2, 2);
 
   await html2canvas(mapDiv, {
     scale: pixelRatio,
@@ -414,7 +414,33 @@ document.getElementById("downloadMap").onclick = async () => {
         if (!blob) return alert("Failed to generate image.");
 
         const url = URL.createObjectURL(blob);
-        showOverlay(url); // 👈 open overlay view
+        const overlay = document.createElement("div");
+        overlay.id = "map-overlay";
+        Object.assign(overlay.style, {
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)",
+          display: "flex", justifyContent: "center", alignItems: "center",
+          zIndex: 99999, padding: "1rem"
+        });
+        document.body.appendChild(overlay);
+        const img = document.createElement("img");
+        img.src = url;
+        img.style.maxWidth = "100%";
+        img.style.maxHeight = "100%";
+        img.style.display = "block";
+        img.style.objectFit = "contain";
+        overlay.appendChild(img);
+
+        const tip = document.createElement("div");
+        tip.textContent = "Tap and hold the image → Save Image";
+        Object.assign(tip.style, { color: "#eee", fontFamily: "sans-serif", marginTop: "1rem", textAlign: "center" });
+        overlay.appendChild(tip);
+
+        // close on background tap
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) overlay.remove();
+        }, { once: true });
+
+        document.body.appendChild(overlay);
         setTimeout(() => URL.revokeObjectURL(url), 36000000);
       }, "image/png");
       }
@@ -432,76 +458,6 @@ document.getElementById("downloadMap").onclick = async () => {
 // Zoom slider
 slider.oninput = function() {
   mapDiv.style.transform = `scale(${this.value/100})`;
-}
-
-// === Overlay viewer ===
-function showOverlay(imageUrl) {
-  // remove existing overlay if open
-  const old = document.getElementById("overlayPreview");
-  if (old) old.remove();
-
-  const overlay = document.createElement("div");
-  overlay.id = "overlayPreview";
-  Object.assign(overlay.style, {
-    position: "fixed",
-    top: 0, left: 0, right: 0, bottom: 0,
-    background: "rgba(0,0,0,0.85)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999,
-  });
-
-  const img = document.createElement("img");
-  img.src = imageUrl;
-  Object.assign(img.style, {
-    maxWidth: "90%",
-    maxHeight: "90%",
-    borderRadius: "12px",
-    boxShadow: "0 0 20px rgba(255,255,255,0.2)",
-  });
-
-  const closeBtn = document.createElement("button");
-  closeBtn.textContent = "×";
-  Object.assign(closeBtn.style, {
-    position: "absolute",
-    top: "16px",
-    right: "24px",
-    fontSize: "36px",
-    color: "#fff",
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-  });
-  closeBtn.onclick = () => overlay.remove();
-
-  const downloadBtn = document.createElement("button");
-  downloadBtn.textContent = "⬇️ Save";
-  Object.assign(downloadBtn.style, {
-    position: "absolute",
-    bottom: "24px",
-    right: "24px",
-    padding: "10px 16px",
-    fontSize: "16px",
-    background: "#007bff",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-  });
-  downloadBtn.onclick = () => {
-    const link = document.createElement("a");
-    link.href = imageUrl;
-    link.download = "routed_map_full.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  overlay.appendChild(img);
-  overlay.appendChild(closeBtn);
-  overlay.appendChild(downloadBtn);
-  document.body.appendChild(overlay);
 }
 
 // // Add all files to cache
