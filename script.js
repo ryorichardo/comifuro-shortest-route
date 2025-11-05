@@ -361,7 +361,7 @@ document.getElementById("downloadMap").onclick = async () => {
   // Use device pixel ratio for crisp Retina capture
 
   // --- html2canvas capture ---
-const MAX_SIZE = 8000; // Safari limit
+const MAX_SIZE = 4096; // Safari limit
 const pixelRatio = Math.min(window.devicePixelRatio || 1, 2); // cap for retina
 const scale = Math.min(pixelRatio, MAX_SIZE / Math.max(mapDiv.scrollWidth, mapDiv.scrollHeight));
 
@@ -376,6 +376,8 @@ await html2canvas(mapDiv, {
   imageTimeout: 0,
   removeContainer: true,
 }).then(canvas => {
+  console.log(mapDiv.scrollWidth);
+  console.log(mapDiv.scrollHeight);
   // --- Downscale large canvases if needed ---
   if (canvas.width > MAX_SIZE || canvas.height > MAX_SIZE) {
     const ratio = MAX_SIZE / Math.max(canvas.width, canvas.height);
