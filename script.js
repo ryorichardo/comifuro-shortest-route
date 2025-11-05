@@ -357,7 +357,7 @@ document.getElementById("downloadMap").onclick = async () => {
   wrapper.style.height = `${mapDiv.scrollHeight}px`;
 
   // Use device pixel ratio for crisp Retina capture
-  const pixelRatio = window.devicePixelRatio || 1;
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
 
   await html2canvas(mapDiv, {
     scale: pixelRatio,
@@ -367,7 +367,7 @@ document.getElementById("downloadMap").onclick = async () => {
     height: mapDiv.scrollHeight,
     backgroundColor: "#181A1B"
   }).then(canvas => {
-    const image = canvas.toDataURL("image/jpg");
+    // const image = canvas.toDataURL("image/png");
 
     if (false) {
       const overlay = document.createElement("div");
@@ -398,14 +398,38 @@ document.getElementById("downloadMap").onclick = async () => {
 
       document.body.appendChild(overlay);
     } else {
-      // Works normally elsewhere
-      const link = document.createElement("a");
-      link.href = image;
-      link.download = isIOS ? "routed_map_full" : "routed_map_full.jpg";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+      // // Works normally elsewhere
+      // const link = document.createElement("a");
+      // link.href = image;
+      // link.download = isIOS ? "routed_map_full" : "routed_map_full.jpg";
+      // document.body.appendChild(link);
+      // link.click();
+      // document.body.removeChild(link);
+
+        canvas.toBlob(blob => {
+        if (!blob) return alert("Failed to generate image.");
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "routed_map_full.png";
+
+        // Try triggering download
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+        if (isSafari) {
+          // Safari/iPad fallback — open in new tab instead
+          window.open(url, "_blank");
+        } else {
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+
+        // Clean up
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }, "image/png");
+      }
   });
 
   // Restore original state
