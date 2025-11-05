@@ -367,7 +367,7 @@ document.getElementById("downloadMap").onclick = async () => {
     height: mapDiv.scrollHeight,
     backgroundColor: "#181A1B"
   }).then(canvas => {
-    const image = canvas.toDataURL("image/png");
+    const image = canvas.toDataURL("image/jpg");
 
     if (false) {
       const overlay = document.createElement("div");
@@ -401,7 +401,7 @@ document.getElementById("downloadMap").onclick = async () => {
       // Works normally elsewhere
       const link = document.createElement("a");
       link.href = image;
-      link.download = "routed_map_full.png";
+      link.download = isIOS ? "routed_map_full" : "routed_map_full.jpg";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
