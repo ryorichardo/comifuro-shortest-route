@@ -359,163 +359,201 @@ document.getElementById("downloadMap").onclick = async () => {
   await new Promise(r => requestAnimationFrame(r));
 
   // Use device pixel ratio for crisp Retina capture
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
 
-  await html2canvas(mapDiv, {
-    scale: pixelRatio,
-    useCORS: true,
-    allowTaint: true,
-    width: mapDiv.scrollWidth,
-    height: mapDiv.scrollHeight,
-    foreignObjectRendering: true,
-    backgroundColor: "#181A1B",
-    removeContainer: true,
-    logging: true
-  }).then(canvas => {
-    const image = canvas.toDataURL("image/png");
+  // --- html2canvas capture ---
+const MAX_SIZE = 8000; // Safari limit
+const pixelRatio = Math.min(window.devicePixelRatio || 1, 2); // cap for retina
+const scale = Math.min(pixelRatio, MAX_SIZE / Math.max(mapDiv.scrollWidth, mapDiv.scrollHeight));
 
-    if (true) {
-      const overlay = document.createElement("div");
-      overlay.id = "map-overlay";
-      Object.assign(overlay.style, {
-        position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)",
-        display: "flex", justifyContent: "center", alignItems: "center",
-        zIndex: 99999, padding: "1rem"
-      });
-      const img = document.createElement("img");
-      img.src = image;
-      img.style.maxWidth = "100%";
-      img.style.maxHeight = "100%";
-      img.style.display = "block";
-      img.style.objectFit = "contain";
-      overlay.appendChild(img);
-
-      const tip = document.createElement("div");
-      tip.textContent = "Tap and hold the image → Save Image";
-      Object.assign(tip.style, { color: "#eee", fontFamily: "sans-serif", marginTop: "1rem", textAlign: "center" });
-      overlay.appendChild(tip);
-
-      // close on background tap
-      overlay.addEventListener("click", (e) => {
-        if (e.target === overlay) overlay.remove();
-      }, { once: true });
-
-      document.body.appendChild(overlay);
-    } else {
-      // // Works normally elsewhere
-      // const link = document.createElement("a");
-      // link.href = image;
-      // link.download = isIOS ? "routed_map_full" : "routed_map_full.jpg";
-      // document.body.appendChild(link);
-      // link.click();
-      // document.body.removeChild(link);
-
-        canvas.toBlob(blob => {
-      //   if (!blob) return alert("Failed to generate image.");
-
-      //   const url = URL.createObjectURL(blob);
-      //   const overlay = document.createElement("div");
-      //   overlay.id = "map-overlay";
-      //   Object.assign(overlay.style, {
-      //     position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)",
-      //     display: "flex", justifyContent: "center", alignItems: "center",
-      //     zIndex: 99999, padding: "1rem"
-      //   });
-      //   const img = document.createElement("img");
-      //   img.src = url;
-      //   img.style.maxWidth = "100%";
-      //   img.style.maxHeight = "100%";
-      //   img.style.display = "block";
-      //   img.style.objectFit = "contain";
-      //   overlay.appendChild(img);
-
-      //   const tip = document.createElement("div");
-      //   tip.textContent = "Tap and hold the image → Save Image";
-      //   Object.assign(tip.style, { color: "#eee", fontFamily: "sans-serif", marginTop: "1rem", textAlign: "center" });
-      //   overlay.appendChild(tip);
-
-      //   // close on background tap
-      //   overlay.addEventListener("click", (e) => {
-      //     if (e.target === overlay) overlay.remove();
-      //   }, { once: true });
-
-      //   document.body.appendChild(overlay);
-      //   setTimeout(() => URL.revokeObjectURL(url), 36000000);
-      // }, "image/png");
-      // }
-      alert("canvas.toBlob called");
-        if (!blob) return alert("Failed to generate image.");
-  let url = null;
-    if (blob) {
-    url = URL.createObjectURL(blob);
-  } else {
-    // iOS Safari often fails here
-    alert("Blob creation failed, using base64 fallback.");
-    url = canvas.toDataURL("image/png");
+await html2canvas(mapDiv, {
+  scale,
+  useCORS: true,
+  allowTaint: true,
+  backgroundColor: "#181A1B",
+  width: mapDiv.scrollWidth,
+  height: mapDiv.scrollHeight,
+  logging: false,
+  imageTimeout: 0,
+  removeContainer: true,
+}).then(canvas => {
+  // --- Downscale large canvases if needed ---
+  if (canvas.width > MAX_SIZE || canvas.height > MAX_SIZE) {
+    const ratio = MAX_SIZE / Math.max(canvas.width, canvas.height);
+    const resized = document.createElement("canvas");
+    resized.width = canvas.width * ratio;
+    resized.height = canvas.height * ratio;
+    const ctx = resized.getContext("2d");
+    ctx.drawImage(canvas, 0, 0, resized.width, resized.height);
+    canvas = resized;
   }
 
-  requestAnimationFrame(() => {
-    const overlay = document.createElement("div");
-    overlay.id = "map-overlay";
-    Object.assign(overlay.style, {
-      position: "fixed",
-      inset: 0,
-      background: "rgba(0,0,0,0.9)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 99999,
-      padding: "1rem",
-      transition: "opacity 0.2s ease",
-      opacity: "0"
-    });
+  // Use JPEG for Safari stability (less memory)
+  const imageURL = canvas.toDataURL("image/jpeg", 0.95);
 
-    const img = document.createElement("img");
-    img.src = url;
-    Object.assign(img.style, {
-      maxWidth: "100%",
-      maxHeight: "100%",
-      display: "block",
-      objectFit: "contain",
-      borderRadius: "8px"
-    });
-    overlay.appendChild(img);
+  // --- Trigger download (cross-platform) ---
+  const link = document.createElement("a");
+  link.href = imageURL;
+  link.download = "routed_map_full.jpg";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
 
-    const tip = document.createElement("div");
-    tip.textContent = "Tap and hold the image → Save Image";
-    Object.assign(tip.style, {
-      color: "#eee",
-      fontFamily: "sans-serif",
-      marginTop: "1rem",
-      textAlign: "center",
-      fontSize: "14px"
-    });
-    overlay.appendChild(tip);
+  // await html2canvas(mapDiv, {
+  //   scale: pixelRatio,
+  //   useCORS: true,
+  //   allowTaint: true,
+  //   width: mapDiv.scrollWidth,
+  //   height: mapDiv.scrollHeight,
+  //   foreignObjectRendering: true,
+  //   backgroundColor: "#181A1B",
+  //   removeContainer: true,
+  //   logging: true
+  // }).then(canvas => {
+  //   const image = canvas.toDataURL("image/png");
 
-    overlay.addEventListener("click", e => {
-      if (e.target === overlay) {
-        overlay.style.opacity = "0";
-        setTimeout(() => overlay.remove(), 200);
-      }
-    });
+  //   if (true) {
+  //     const overlay = document.createElement("div");
+  //     overlay.id = "map-overlay";
+  //     Object.assign(overlay.style, {
+  //       position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)",
+  //       display: "flex", justifyContent: "center", alignItems: "center",
+  //       zIndex: 99999, padding: "1rem"
+  //     });
+  //     const img = document.createElement("img");
+  //     img.src = image;
+  //     img.style.maxWidth = "100%";
+  //     img.style.maxHeight = "100%";
+  //     img.style.display = "block";
+  //     img.style.objectFit = "contain";
+  //     overlay.appendChild(img);
 
-    document.body.appendChild(overlay);
-    requestAnimationFrame(() => (overlay.style.opacity = "1"));
+  //     const tip = document.createElement("div");
+  //     tip.textContent = "Tap and hold the image → Save Image";
+  //     Object.assign(tip.style, { color: "#eee", fontFamily: "sans-serif", marginTop: "1rem", textAlign: "center" });
+  //     overlay.appendChild(tip);
 
-    // Clean up blob URL after some time
-    setTimeout(() => URL.revokeObjectURL(url), 3600000);
-      });
-    }, "image/png");
-  }
-  });
+  //     // close on background tap
+  //     overlay.addEventListener("click", (e) => {
+  //       if (e.target === overlay) overlay.remove();
+  //     }, { once: true });
 
-  // Restore original state
-  mapDiv.style.transform = prevTransform;
-  mapDiv.style.transformOrigin = prevTransformOrigin;
-  wrapper.style.width = prevWidth;
-  wrapper.style.height = prevHeight;
-  wrapper.scrollTop = prevScrollTop;
-  wrapper.scrollLeft = prevScrollLeft;
+  //     document.body.appendChild(overlay);
+  //   } else {
+  //     // // Works normally elsewhere
+  //     // const link = document.createElement("a");
+  //     // link.href = image;
+  //     // link.download = isIOS ? "routed_map_full" : "routed_map_full.jpg";
+  //     // document.body.appendChild(link);
+  //     // link.click();
+  //     // document.body.removeChild(link);
+
+  //       canvas.toBlob(blob => {
+  //     //   if (!blob) return alert("Failed to generate image.");
+
+  //     //   const url = URL.createObjectURL(blob);
+  //     //   const overlay = document.createElement("div");
+  //     //   overlay.id = "map-overlay";
+  //     //   Object.assign(overlay.style, {
+  //     //     position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)",
+  //     //     display: "flex", justifyContent: "center", alignItems: "center",
+  //     //     zIndex: 99999, padding: "1rem"
+  //     //   });
+  //     //   const img = document.createElement("img");
+  //     //   img.src = url;
+  //     //   img.style.maxWidth = "100%";
+  //     //   img.style.maxHeight = "100%";
+  //     //   img.style.display = "block";
+  //     //   img.style.objectFit = "contain";
+  //     //   overlay.appendChild(img);
+
+  //     //   const tip = document.createElement("div");
+  //     //   tip.textContent = "Tap and hold the image → Save Image";
+  //     //   Object.assign(tip.style, { color: "#eee", fontFamily: "sans-serif", marginTop: "1rem", textAlign: "center" });
+  //     //   overlay.appendChild(tip);
+
+  //     //   // close on background tap
+  //     //   overlay.addEventListener("click", (e) => {
+  //     //     if (e.target === overlay) overlay.remove();
+  //     //   }, { once: true });
+
+  //     //   document.body.appendChild(overlay);
+  //     //   setTimeout(() => URL.revokeObjectURL(url), 36000000);
+  //     // }, "image/png");
+  //     // }
+  //     alert("canvas.toBlob called");
+  //       if (!blob) return alert("Failed to generate image.");
+  // let url = null;
+  //   if (blob) {
+  //   url = URL.createObjectURL(blob);
+  // } else {
+  //   // iOS Safari often fails here
+  //   alert("Blob creation failed, using base64 fallback.");
+  //   url = canvas.toDataURL("image/png");
+  // }
+
+  // requestAnimationFrame(() => {
+  //   const overlay = document.createElement("div");
+  //   overlay.id = "map-overlay";
+  //   Object.assign(overlay.style, {
+  //     position: "fixed",
+  //     inset: 0,
+  //     background: "rgba(0,0,0,0.9)",
+  //     display: "flex",
+  //     justifyContent: "center",
+  //     alignItems: "center",
+  //     zIndex: 99999,
+  //     padding: "1rem",
+  //     transition: "opacity 0.2s ease",
+  //     opacity: "0"
+  //   });
+
+  //   const img = document.createElement("img");
+  //   img.src = url;
+  //   Object.assign(img.style, {
+  //     maxWidth: "100%",
+  //     maxHeight: "100%",
+  //     display: "block",
+  //     objectFit: "contain",
+  //     borderRadius: "8px"
+  //   });
+  //   overlay.appendChild(img);
+
+  //   const tip = document.createElement("div");
+  //   tip.textContent = "Tap and hold the image → Save Image";
+  //   Object.assign(tip.style, {
+  //     color: "#eee",
+  //     fontFamily: "sans-serif",
+  //     marginTop: "1rem",
+  //     textAlign: "center",
+  //     fontSize: "14px"
+  //   });
+  //   overlay.appendChild(tip);
+
+  //   overlay.addEventListener("click", e => {
+  //     if (e.target === overlay) {
+  //       overlay.style.opacity = "0";
+  //       setTimeout(() => overlay.remove(), 200);
+  //     }
+  //   });
+
+  //   document.body.appendChild(overlay);
+  //   requestAnimationFrame(() => (overlay.style.opacity = "1"));
+
+  //   // Clean up blob URL after some time
+  //   setTimeout(() => URL.revokeObjectURL(url), 3600000);
+  //     });
+  //   }, "image/png");
+  // }
+  // });
+
+  // // Restore original state
+  // mapDiv.style.transform = prevTransform;
+  // mapDiv.style.transformOrigin = prevTransformOrigin;
+  // wrapper.style.width = prevWidth;
+  // wrapper.style.height = prevHeight;
+  // wrapper.scrollTop = prevScrollTop;
+  // wrapper.scrollLeft = prevScrollLeft;
 };
 
 // Zoom slider
