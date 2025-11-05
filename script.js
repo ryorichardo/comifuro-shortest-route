@@ -372,7 +372,7 @@ document.getElementById("downloadMap").onclick = async () => {
   }).then(canvas => {
     // const image = canvas.toDataURL("image/png");
 
-    if (false) {
+    if (true) {
       const overlay = document.createElement("div");
       overlay.id = "map-overlay";
       Object.assign(overlay.style, {
