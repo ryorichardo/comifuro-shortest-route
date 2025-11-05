@@ -362,8 +362,8 @@ document.getElementById("downloadMap").onclick = async () => {
     backgroundColor: "#181A1B"
   }).then(canvas => {
     const link = document.createElement("a");
-    link.download = "routed_map_full.png";
-    link.href = canvas.toDataURL("image/png");
+    link.download = "routed_map_full.jpg";
+    link.href = canvas.toDataURL("image/jpeg");
 
     document.body.appendChild(link);
     link.click();
