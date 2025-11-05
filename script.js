@@ -365,7 +365,10 @@ document.getElementById("downloadMap").onclick = async () => {
     allowTaint: true,
     width: mapDiv.scrollWidth,
     height: mapDiv.scrollHeight,
-    backgroundColor: "#181A1B"
+    foreignObjectRendering: true,
+    backgroundColor: "#181A1B",
+    removeContainer: true,
+    logging: true
   }).then(canvas => {
     // const image = canvas.toDataURL("image/png");
 
