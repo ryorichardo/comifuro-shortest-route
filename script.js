@@ -110,7 +110,10 @@ applyInputBtn.addEventListener("click", () => {
   if (inputVal.length < 2) {
     inputVal = inputVal[0].split("\n");
   }
-  if (!inputVal) return;
+  if (!inputVal || (inputVal.length < 2 && inputVal[0].trim().length == 0)) {
+    showToast("Use comma ',' or enter a new line as separator", "info");
+    return;
+  }
   const boothCodes = inputVal.map(b => b.trim()).filter(b => b);
   const notFoundBooth = [];
   for (const booth of boothCodes) {
@@ -126,9 +129,30 @@ applyInputBtn.addEventListener("click", () => {
     }
   }
   if (notFoundBooth.length > 0) {
-    alert("Booth " + notFoundBooth.map(e => e + ", ") + " not found")
+    const text = notFoundBooth.toString();
+    showToast(`Booth ${text} not found!`, "error");
+  } else if (boothCodes.length > 0) {
+    showToast(`Added ${boothCodes.length} booth(s)!`, "success");
   }
 });
+
+// --- Floating notification helper ---
+function showToast(message, type, duration = 2500) {
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  
+  // Trigger fade-in
+  requestAnimationFrame(() => toast.classList.add("show"));
+
+  // Auto-remove after duration
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 400); // wait for fade-out
+  }, duration);
+}
+
 
 // --- Compute route ---
 computeBtn.addEventListener("click", async () => {
